@@ -48,6 +48,7 @@ export function PackageHelperScreen() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [cameraVisible, setCameraVisible] = useState(false);
   const cameraRef = useRef(null);
+  const [validationErrors, setValidationErrors] = useState([]);
 
   const [isAddNewAddressModalVisible, setIsAddNewAddressModalVisible] =
     useState(false);
@@ -132,9 +133,9 @@ export function PackageHelperScreen() {
     //   console.log("Looped " + counter + " time(s)")
     // }
     await wait(1000);
-    console.log(
-      "address_id: " + selectedAddress + " package marker: " + packageMarker
-    );
+    // console.log(
+    //   "address_id: " + selectedAddress + " package marker: " + packageMarker
+    // );
     try {
       const newDeliveryData = {
         route_id: selectedRoute,
@@ -145,7 +146,7 @@ export function PackageHelperScreen() {
         out_for_delivery: false,
         delivered: false,
       };
-      console.log(newDeliveryData);
+      // console.log(newDeliveryData);
       const response = await fetch(`${API_BASE_URL}/deliveries`, {
         method: "POST",
         headers: {
@@ -194,7 +195,7 @@ export function PackageHelperScreen() {
         .then((response) => response.json())
         .then(async (data) => {
           const fullExtractedText = data.text;
-          console.log(fullExtractedText);
+          // console.log(fullExtractedText);
 
           if (fullExtractedText) {
             await AsyncStorage.setItem(
@@ -251,7 +252,7 @@ export function PackageHelperScreen() {
 
   const fetchDeliveries = async () => {
     try {
-    setIsLoading(true)
+      setIsLoading(true);
       const selectedRouteId = await AsyncStorage.getItem("selectedRoute");
       setSelectedRoute(selectedRouteId);
 
@@ -261,7 +262,7 @@ export function PackageHelperScreen() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data)
+        // console.log(data);
         // Filter by only active deliveries
         deliveryData = data.filter((delivery) => delivery.active_status != 0);
         // Sort deliveries based on 'delivered' status and then by case_number,
@@ -292,7 +293,7 @@ export function PackageHelperScreen() {
 
         // console.log(sortedDeliveries);
         setDeliveries(sortedDeliveries);
-        setIsLoading(false)
+        setIsLoading(false);
       } else {
         console.error("Error fetching deliveries:", response.status);
       }
@@ -341,10 +342,10 @@ export function PackageHelperScreen() {
   }, [selectedAddress, date]);
 
   const handleAddNewAddress = async () => {
-    console.log(
-      "handle add new address data: \n" +
-        JSON.stringify(newAddressData, null, 2)
-    );
+    // console.log(
+    //   "handle add new address data: \n" +
+    //     JSON.stringify(newAddressData, null, 2)
+    // );
     try {
       const response = await fetch(`${API_BASE_URL}/addresses`, {
         method: "POST",
@@ -356,11 +357,11 @@ export function PackageHelperScreen() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         setSelectedAddress(data.address.id.toString());
-        console.log(data.address.id);
+        // console.log(data.address.id);
         await wait(2000);
-        console.log(selectedAddress);
+        // console.log(selectedAddress);
         // Triggers addNewDelivery
         setSelectedAddressUpdated(true);
         closeAddNewAddressModal();
@@ -397,7 +398,7 @@ export function PackageHelperScreen() {
     if (type == "set") {
       // setShowDatePicker(Platform.OS === 'ios'); // Hide the picker on iOS
       setDate(formatDate(selectedDate));
-      console.log(formatDate(selectedDate));
+      // console.log(formatDate(selectedDate));
 
       if (Platform.OS === "android") {
         toggleDatepicker();
@@ -454,7 +455,7 @@ export function PackageHelperScreen() {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Delete"),
+          // onPress: () => console.log("Cancel Delete"),
           style: "cancel",
         },
         {
@@ -498,6 +499,63 @@ export function PackageHelperScreen() {
       ],
       { cancelable: true }
     );
+  };
+
+  const validateForm = () => {
+    const errors = [];
+
+    if (!caseViewActive) {
+      if (!newAddress.address1.trim()) {
+        errors.push("Address1 is required");
+      }
+      // if (!newAddress.address2.trim()) {
+      //   errors.push("Address2 is required");
+      // }
+      if (!newAddress.city.trim()) {
+        errors.push("City is required");
+      }
+      if (!newAddress.state.trim()) {
+        errors.push("State is required");
+      }
+      if (!newAddress.zip_code.trim()) {
+        errors.push("Zip Code is required");
+      }
+      if (!newAddress.case_number.trim()) {
+        errors.push("Case Number is required");
+      }
+      if (!newAddress.case_row_number.trim()) {
+        errors.push("Row Number is required");
+      }
+
+    } else if (caseViewActive) {
+      
+      if (!newAddress.address1.trim()) {
+        errors.push("Address1 is required");
+      }
+      // if (!newAddress.address2.trim()) {
+      //   errors.push("Address2 is required");
+      // }
+      if (!newAddress.city.trim()) {
+        errors.push("City is required");
+      }
+      if (!newAddress.state.trim()) {
+        errors.push("State is required");
+      }
+      if (!newAddress.zip_code.trim()) {
+        errors.push("Zip Code is required");
+      }
+      if (!newAddress.case_number.trim()) {
+        errors.push("Case Number is required");
+      }
+      if (!newAddress.case_row_number.trim()) {
+        errors.push("Row Number is required");
+      }
+    }
+
+    // Add more validation rules as needed for other fields
+
+    setValidationErrors(errors);
+    return errors.length === 0;
   };
 
   return (
@@ -550,7 +608,7 @@ export function PackageHelperScreen() {
           <Button title={"Allow Camera"} onPress={askForCameraPermission} />
         </View>
       )}
-
+      {/* Camera Modal */}
       <Modal
         visible={cameraVisible}
         animationType="slide"
@@ -583,6 +641,7 @@ export function PackageHelperScreen() {
         </View>
       </Modal>
 
+      {/* Modal for Add New Address */}
       <Modal
         visible={isAddNewAddressModalVisible}
         animationType="slide"
@@ -662,46 +721,47 @@ export function PackageHelperScreen() {
         </View>
       </Modal>
       {deliveries.length > 0 ? (
-      <FlatList
-        data={deliveries}
-        keyExtractor={(item) => item.delivery_id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.deliveryItem}>
-            <Text>Delivery ID: {item.delivery_id}</Text>
-            <Text>Address ID: {item.address_id}</Text>
-            <Text>Case Number: {item.case_number}</Text>
-            <Text>Row Number: {item.case_row_number}</Text>
-            <Text>Row Position Number: {item.position_number}</Text>
-            <Text>Package Marker Number: {item.package_marker_number}</Text>
-            <Text>Address 1: {item.address1}</Text>
-            <Text>Address 2: {item.address2}</Text>
-            <Text>City: {item.city}</Text>
-            <Text>State: {item.state}</Text>
-            <Text>Zip Code: {item.zip_code}</Text>
-            <Text>Delivered: {item.delivered ? "Yes" : "No"}</Text>
-            <Button
-              title={item.delivered ? "Mark Undelivered" : "Mark Delivered"}
-              onPress={() =>
-                toggleDeliveredStatus(item.delivery_id, !item.delivered)
-              }
-            />
-            {/* Delete button */}
-            <Button
-              title="Delete"
-              onPress={() =>
-                handleDeleteDelivery(item.delivery_id, item.active_status)
-              }
-              color="red"
-            />
-          </View>
-        )}
-      />
+        <FlatList
+          data={deliveries}
+          keyExtractor={(item) => item.delivery_id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.deliveryItem}>
+              <Text>Delivery ID: {item.delivery_id}</Text>
+              <Text>Address ID: {item.address_id}</Text>
+              <Text>Case Number: {item.case_number}</Text>
+              <Text>Row Number: {item.case_row_number}</Text>
+              <Text>Row Position Number: {item.position_number}</Text>
+              <Text>Package Marker Number: {item.package_marker_number}</Text>
+              <Text>Address 1: {item.address1}</Text>
+              <Text>Address 2: {item.address2}</Text>
+              <Text>City: {item.city}</Text>
+              <Text>State: {item.state}</Text>
+              <Text>Zip Code: {item.zip_code}</Text>
+              <Text>Delivered: {item.delivered ? "Yes" : "No"}</Text>
+              <Button
+                title={item.delivered ? "Mark Undelivered" : "Mark Delivered"}
+                onPress={() =>
+                  toggleDeliveredStatus(item.delivery_id, !item.delivered)
+                }
+              />
+              {/* Delete button */}
+              <Button
+                title="Delete"
+                onPress={() =>
+                  handleDeleteDelivery(item.delivery_id, item.active_status)
+                }
+                color="red"
+              />
+            </View>
+          )}
+        />
       ) : (
         <Text>No deliveries found.</Text>
       )}
       <Button title="Scan Label" onPress={() => setCameraVisible(true)} />
       <Button title="Add Delivery" onPress={openAddDeliveryModal} />
 
+      {/* Add Delivery Modal */}
       <Modal
         visible={isAddDeliveryModalVisible}
         animationType="slide"
@@ -733,7 +793,8 @@ export function PackageHelperScreen() {
           />
         </View>
       </Modal>
-
+      
+      {/* Set Package Marker Modal */}
       <Modal
         visible={isPackageMarkerModalVisible}
         animationType="slide"
