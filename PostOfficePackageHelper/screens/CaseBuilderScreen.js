@@ -494,7 +494,7 @@ export function CaseBuilderScreen() {
   };
 
   const handleSavePositionNumberChanges = async () => {
-    if (!validateForm()) {
+    if (!validateEditForm()) {
       return; // Don't proceed if the form is not valid
     }
     // Send a PUT request to update the address on the server
@@ -745,9 +745,9 @@ export function CaseBuilderScreen() {
       if (!newAddress.address1.trim()) {
         errors.push("Address1 is required");
       }
-      if (!newAddress.address2.trim()) {
-        errors.push("Address2 is required");
-      }
+      // if (!newAddress.address2.trim()) {
+      //   errors.push("Address2 is required");
+      // }
       if (!newAddress.city.trim()) {
         errors.push("City is required");
       }
@@ -757,13 +757,21 @@ export function CaseBuilderScreen() {
       if (!newAddress.zip_code.trim()) {
         errors.push("Zip Code is required");
       }
+      if (!newAddress.case_number.trim()) {
+        errors.push("Case Number is required");
+      }
+      if (!newAddress.case_row_number.trim()) {
+        errors.push("Row Number is required");
+      }
+
     } else if (caseViewActive) {
+      
       if (!newAddress.address1.trim()) {
         errors.push("Address1 is required");
       }
-      if (!newAddress.address2.trim()) {
-        errors.push("Address2 is required");
-      }
+      // if (!newAddress.address2.trim()) {
+      //   errors.push("Address2 is required");
+      // }
       if (!newAddress.city.trim()) {
         errors.push("City is required");
       }
@@ -780,6 +788,32 @@ export function CaseBuilderScreen() {
         errors.push("Row Number is required");
       }
     }
+
+    // Add more validation rules as needed for other fields
+
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
+  const validateEditForm = () => {
+    const errors = [];
+
+    if (!editedAddress.address1.trim()) {
+      errors.push("Address1 is required");
+    }
+    // if (!editedAddress.address2.trim()) {
+    //   errors.push("Address2 is required");
+    // }
+    if (!editedAddress.city.trim()) {
+      errors.push("City is required");
+    }
+    if (!editedAddress.state.trim()) {
+      errors.push("State is required");
+    }
+    if (!editedAddress.zip_code.trim()) {
+      errors.push("Zip Code is required");
+    }
+    
 
     // Add more validation rules as needed for other fields
 
@@ -1034,7 +1068,7 @@ export function CaseBuilderScreen() {
           )}
 
           {/* Add Address Modal Case & List View */}
-          {caseViewActive ? (
+          {/* {caseViewActive ? ( */}
             <Modal
               animationType="slide"
               transparent={true}
@@ -1053,7 +1087,7 @@ export function CaseBuilderScreen() {
                     ))}
                   </View>
                   <TextInput
-                    placeholder="Address 1 Case"
+                    placeholder="Address 1"
                     onChangeText={(text) =>
                       setNewAddress({ ...newAddress, address1: text })
                     }
@@ -1105,8 +1139,8 @@ export function CaseBuilderScreen() {
                 </View>
               </View>
             </Modal>
-          ) : (
-            <Modal
+          {/* ) : ( */}
+            {/* <Modal
               animationType="slide"
               transparent={true}
               visible={newAddressModalVisible}
@@ -1180,7 +1214,7 @@ export function CaseBuilderScreen() {
                 </View>
               </View>
             </Modal>
-          )}
+          )} */}
         </View>
       ) : (
         <Text>Loading...</Text>

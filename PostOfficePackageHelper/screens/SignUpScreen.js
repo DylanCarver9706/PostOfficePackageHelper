@@ -41,9 +41,9 @@ export function SignUpScreen() {
       errors.push("Email is not valid");
     }
 
-    // if (!phoneNumber.trim()) {
-    //   errors.push("Phone Number is required");
-    // }
+    if (!phoneNumber.trim()) {
+      errors.push("Phone Number is required");
+    }
 
     // if (!position.trim()) {
     //   errors.push("Position is required");

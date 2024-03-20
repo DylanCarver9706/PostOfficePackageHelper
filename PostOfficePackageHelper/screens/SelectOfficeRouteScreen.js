@@ -35,8 +35,20 @@ export function SelectOfficeRouteScreen() {
     postmaster_name: "",
     postmaster_phone_number: "",
   });
+  const [editOfficeInfo, setEditOfficeInfo] = useState({
+    city: "",
+    state: "",
+    supervisor_name: "",
+    supervisor_phone_number: "",
+    postmaster_name: "",
+    postmaster_phone_number: "",
+  });
   const [editingOffice, setEditingOffice] = useState(null);
   const [newRouteInfo, setNewRouteInfo] = useState({
+    route_number: "",
+    // Add other route fields here
+  });
+  const [editRouteInfo, setEditRouteInfo] = useState({
     route_number: "",
     // Add other route fields here
   });
@@ -240,7 +252,7 @@ export function SelectOfficeRouteScreen() {
   // Function to handle opening the edit modal
   const handleEditOffice = (office) => {
     setEditingOffice(office); // Set the office being edited
-    setNewOfficeInfo({
+    setEditOfficeInfo({
       city: office.city,
       state: office.state,
       supervisor_name: office.supervisor_name,
@@ -254,7 +266,7 @@ export function SelectOfficeRouteScreen() {
   // Function to update an existing office
   const handleUpdateOffice = async () => {
     let forOfficeInputs = true;
-    if (!validateForm(forOfficeInputs)) {
+    if (!validateEditForm(forOfficeInputs)) {
       return; // Don't proceed if the form is not valid
     }
     // Close the modal
@@ -268,12 +280,12 @@ export function SelectOfficeRouteScreen() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            city: newOfficeInfo.city,
-            state: newOfficeInfo.state,
-            supervisor_name: newOfficeInfo.supervisor_name,
-            supervisor_phone_number: newOfficeInfo.supervisor_phone_number,
-            postmaster_name: newOfficeInfo.postmaster_name,
-            postmaster_phone_number: newOfficeInfo.postmaster_phone_number,
+            city: editOfficeInfo.city,
+            state: editOfficeInfo.state,
+            supervisor_name: editOfficeInfo.supervisor_name,
+            supervisor_phone_number: editOfficeInfo.supervisor_phone_number,
+            postmaster_name: editOfficeInfo.postmaster_name,
+            postmaster_phone_number: editOfficeInfo.postmaster_phone_number,
           }),
         }
       );
@@ -404,7 +416,7 @@ export function SelectOfficeRouteScreen() {
 
   const handleEditRoute = (route) => {
     setEditingRoute(route); // Set the route being edited
-    setNewRouteInfo({
+    setEditRouteInfo({
       route_number: route.route_number,
       // Populate other route fields here for editing
     });
@@ -413,7 +425,7 @@ export function SelectOfficeRouteScreen() {
 
   const handleUpdateRoute = async () => {
     let forOfficeInputs = false;
-    if (!validateForm(forOfficeInputs)) {
+    if (!validateEditForm(forOfficeInputs)) {
       return; // Don't proceed if the form is not valid
     }
     setExistingRouteModalVisible(false);
@@ -427,7 +439,7 @@ export function SelectOfficeRouteScreen() {
           },
           body: JSON.stringify({
             office_id: selectedPostOffice.office_id,
-            route_number: newRouteInfo.route_number,
+            route_number: editRouteInfo.route_number,
             // Include other updated route fields here
           }),
         }
@@ -438,7 +450,7 @@ export function SelectOfficeRouteScreen() {
         fetchRoutes(selectedPostOffice.office_id);
 
         // Close the modal, clear the new route info, and reset the editing route
-        setNewRouteInfo({
+        setEditRouteInfo({
           route_number: "",
           // Clear other route fields here
         });
@@ -485,6 +497,30 @@ export function SelectOfficeRouteScreen() {
     } else {
       // Add validation rules for the "Add New Route" form here
       if (!newRouteInfo.route_number.trim()) {
+        errors.push("Route Number is required");
+      }
+    }
+
+    // Add more validation rules as needed for other fields
+
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
+  const validateEditForm = (forOfficeInputs) => {
+    const errors = [];
+
+    if (forOfficeInputs) {
+      // Add validation rules for the "Add New Post Office" form here
+      if (!editOfficeInfo.city.trim()) {
+        errors.push("City is required");
+      }
+      if (!editOfficeInfo.state.trim()) {
+        errors.push("State is required");
+      }
+    } else {
+      // Add validation rules for the "Add New Route" form here
+      if (!editRouteInfo.route_number.trim()) {
         errors.push("Route Number is required");
       }
     }
@@ -742,48 +778,48 @@ export function SelectOfficeRouteScreen() {
             <Text>Edit Office</Text>
             <TextInput
               placeholder="City"
-              value={newOfficeInfo.city}
+              value={editOfficeInfo.city}
               onChangeText={(text) =>
-                setNewOfficeInfo({ ...newOfficeInfo, city: text })
+                setEditOfficeInfo({ ...editOfficeInfo, city: text })
               }
             />
             <TextInput
               placeholder="State"
-              value={newOfficeInfo.state}
+              value={editOfficeInfo.state}
               onChangeText={(text) =>
-                setNewOfficeInfo({ ...newOfficeInfo, state: text })
+                setEditOfficeInfo({ ...editOfficeInfo, state: text })
               }
             />
             <TextInput
               placeholder="Supervisor Name"
-              value={newOfficeInfo.supervisor_name}
+              value={editOfficeInfo.supervisor_name}
               onChangeText={(text) =>
-                setNewOfficeInfo({ ...newOfficeInfo, supervisor_name: text })
+                setEditOfficeInfo({ ...editOfficeInfo, supervisor_name: text })
               }
             />
             <TextInput
               placeholder="Supervisor Phone Number"
-              value={newOfficeInfo.supervisor_phone_number}
+              value={editOfficeInfo.supervisor_phone_number}
               onChangeText={(text) =>
-                setNewOfficeInfo({
-                  ...newOfficeInfo,
+                setEditOfficeInfo({
+                  ...editOfficeInfo,
                   supervisor_phone_number: text,
                 })
               }
             />
             <TextInput
               placeholder="Postmaster Name"
-              value={newOfficeInfo.postmaster_name}
+              value={editOfficeInfo.postmaster_name}
               onChangeText={(text) =>
-                setNewOfficeInfo({ ...newOfficeInfo, postmaster_name: text })
+                setEditOfficeInfo({ ...editOfficeInfo, postmaster_name: text })
               }
             />
             <TextInput
               placeholder="Postmaster Phone Number"
-              value={newOfficeInfo.postmaster_phone_number}
+              value={editOfficeInfo.postmaster_phone_number}
               onChangeText={(text) =>
-                setNewOfficeInfo({
-                  ...newOfficeInfo,
+                setEditOfficeInfo({
+                  ...editOfficeInfo,
                   postmaster_phone_number: text,
                 })
               }
@@ -865,9 +901,9 @@ export function SelectOfficeRouteScreen() {
             <Text>Edit Route</Text>
             <TextInput
               placeholder="Route Number"
-              value={newRouteInfo.route_number}
+              value={editRouteInfo.route_number}
               onChangeText={(text) =>
-                setNewRouteInfo({ ...newRouteInfo, route_number: text })
+                setEditRouteInfo({ ...editRouteInfo, route_number: text })
               }
             />
             {/* Add other input fields for route information here */}

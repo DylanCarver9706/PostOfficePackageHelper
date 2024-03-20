@@ -157,6 +157,9 @@ export function AddressesScreen() {
   };
 
   const handleSaveChanges = async () => {
+    if (!validateEditForm()) {
+      return; // Don't proceed if the form is not valid
+    }
     // Send a PUT request to update the address on the server
     try {
       const response = await fetch(
@@ -309,9 +312,9 @@ export function AddressesScreen() {
     if (!newAddress.address1.trim()) {
       errors.push("Address1 is required");
     }
-    if (!newAddress.address2.trim()) {
-      errors.push("Address2 is required");
-    }
+    // if (!newAddress.address2.trim()) {
+    //   errors.push("Address2 is required");
+    // }
     if (!newAddress.city.trim()) {
       errors.push("City is required");
     }
@@ -319,6 +322,32 @@ export function AddressesScreen() {
       errors.push("State is required");
     }
     if (!newAddress.zip_code.trim()) {
+      errors.push("Zip Code is required");
+    }
+
+    // Add more validation rules as needed for other fields
+
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
+  const validateEditForm = () => {
+    const errors = [];
+
+    // Add validation rules for the "Add New Post Office" form here
+    if (!editedAddress.address1.trim()) {
+      errors.push("Address1 is required");
+    }
+    // if (!editedAddress.address2.trim()) {
+    //   errors.push("Address2 is required");
+    // }
+    if (!editedAddress.city.trim()) {
+      errors.push("City is required");
+    }
+    if (!editedAddress.state.trim()) {
+      errors.push("State is required");
+    }
+    if (!editedAddress.zip_code.trim()) {
       errors.push("Zip Code is required");
     }
 
@@ -410,6 +439,13 @@ export function AddressesScreen() {
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <View style={{ backgroundColor: "white", padding: 20 }}>
+          <View>
+              {validationErrors.map((error, index) => (
+                <Text key={index} style={styles.errorText}>
+                  {error}
+                </Text>
+              ))}
+            </View>
             <TextInput
               placeholder="Address 1"
               value={editedAddress.address1}
