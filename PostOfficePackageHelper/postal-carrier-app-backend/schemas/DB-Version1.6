@@ -1,0 +1,141 @@
+-- Create the database
+CREATE DATABASE IF NOT EXISTS `PostOfficePackageHelperV1.6` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Use the database
+USE `PostOfficePackageHelperV1.6`;
+
+-- Create the 'users' table
+CREATE TABLE IF NOT EXISTS users (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(45) NOT NULL,
+  last_name VARCHAR(45) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  phone_number VARCHAR(15) DEFAULT NULL,
+  position VARCHAR(45) DEFAULT NULL,
+  firebase_user_uid VARCHAR(200) NOT NULL,
+  -- subscription_status ENUM('trial', 'active', 'expired') NOT NULL,
+  -- subscription_expiration DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  active_status BOOLEAN DEFAULT TRUE
+);
+
+-- Create the 'offices' table
+CREATE TABLE IF NOT EXISTS offices (
+  office_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  city VARCHAR(45) NOT NULL,
+  state VARCHAR(45) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  active_status BOOLEAN DEFAULT TRUE,
+  supervisor_name VARCHAR(45),
+  supervisor_phone_number VARCHAR(45),
+  postmaster_name VARCHAR(45),
+  postmaster_phone_number VARCHAR(45),
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- Create the 'routes' table
+CREATE TABLE IF NOT EXISTS routes (
+  route_id INT AUTO_INCREMENT PRIMARY KEY,
+  route_number VARCHAR(45) NOT NULL,
+  office_id INT NOT NULL,
+  FOREIGN KEY (office_id) REFERENCES offices(office_id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  active_status BOOLEAN DEFAULT TRUE
+);
+
+-- Create the 'addresses' table
+CREATE TABLE IF NOT EXISTS addresses (
+  address_id INT AUTO_INCREMENT PRIMARY KEY,
+  route_id INT NOT NULL,
+  case_number INT NOT NULL,
+  case_row_number INT NOT NULL,
+  position_number INT,
+  address1 VARCHAR(45),
+  address2 VARCHAR(255),
+  city VARCHAR(45),
+  state VARCHAR(45),
+  zip_code VARCHAR(10),
+  FOREIGN KEY (route_id) REFERENCES routes(route_id)  ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  active_status BOOLEAN DEFAULT TRUE
+);
+
+-- Create the 'customers' table
+CREATE TABLE IF NOT EXISTS customers (
+  customer_id INT AUTO_INCREMENT PRIMARY KEY,
+  address_id INT NOT NULL,
+  customer_full_name VARCHAR(100) NOT NULL,
+  hold_on_days VARCHAR(10),
+  hold_until DATE,
+  forward_reason VARCHAR(50),
+  FOREIGN KEY (address_id) REFERENCES addresses(address_id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  active_status BOOLEAN DEFAULT TRUE
+);
+
+-- Create the 'deliveries' table
+CREATE TABLE IF NOT EXISTS deliveries (
+  delivery_id INT AUTO_INCREMENT PRIMARY KEY,
+  route_id INT NOT NULL,
+  address_id INT NOT NULL,
+  delivery_date DATE DEFAULT '2023-12-10',
+  package_marker_number VARCHAR(10),
+  scanned BOOLEAN DEFAULT FALSE,
+  out_for_delivery BOOLEAN DEFAULT FALSE,
+  delivered BOOLEAN DEFAULT FALSE,
+  FOREIGN KEY (route_id) REFERENCES routes(route_id)  ON DELETE CASCADE,
+  FOREIGN KEY (address_id) REFERENCES addresses(address_id)  ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  active_status BOOLEAN DEFAULT TRUE
+);
+
+-- Insert dummy data into the 'users' table
+INSERT INTO users (first_name, last_name, email, phone_number, position, firebase_user_uid)
+VALUES 
+  ('Dylan', 'Carver', 'dylancarver14@gmail.com', '6362088099', 'RCA', '123456789qwerty'),
+  ('Kristen', 'Carver', 'kristencarver@gmail.com', '6362091264', 'PSE', '123456789qwerty');
+
+-- Insert dummy data into the 'offices' table
+INSERT INTO offices (user_id, city, state, supervisor_name, supervisor_phone_number, postmaster_name, postmaster_phone_number)
+VALUES 
+  (1, 'Festus', 'MO', 'Oscar', '111-111-1111', 'Dan', '222-222-2222'),
+  (2, 'Imperial', 'MO', 'Mike', '333-333-3333', 'Mike', '444-444-4444');
+
+-- Insert dummy data into the 'routes' table
+INSERT INTO routes (route_number, office_id)
+VALUES 
+  ('10', 1),
+  ('12', 1),
+  ('15', 2),
+  ('18', 2);
+
+-- Insert dummy data into the 'addresses' table
+INSERT INTO addresses (route_id, case_number, case_row_number, position_number, address1, address2, city, state, zip_code)
+VALUES 
+  (1, 1, 1, 1, '123 Main St', '', 'New York', 'NY', '10001'),
+  (1, 2, 1, 1, '456 Elm St', '', 'New York', 'NY', '10001'),
+  (2, 1, 1, 1, '789 Oak St', '', 'New York', 'NY', '10001'),
+  (3, 2, 1, 1, '321 Pine St', '', 'Los Angeles', 'CA', '90001');
+
+-- Insert dummy data into the 'customers' table
+-- INSERT INTO customers (address_id, customer_full_name, hold_on_days, hold_until, forward_reason)
+-- VALUES 
+  -- (1, 'John Smith', '3', '2024-04-10', 'Change of address'),
+  -- (2, 'Jane Doe', '5', '2024-04-15', 'Vacation hold'),
+  -- (3, 'Alice Johnson', '2', '2024-04-05', 'Forward to new address'),
+  -- (4, 'Bob Brown', NULL, NULL, NULL);
+
+-- Insert dummy data into the 'deliveries' table
+INSERT INTO deliveries (route_id, address_id, delivery_date, package_marker_number, scanned, out_for_delivery, delivered)
+VALUES 
+  (1, 1, '2024-04-01', '123', TRUE, TRUE, FALSE),
+  (1, 2, '2024-04-01', '321', TRUE, TRUE, FALSE),
+  (2, 3, '2024-04-02', '456', TRUE, TRUE, FALSE),
+  (3, 4, '2024-04-03', '654', TRUE, TRUE, FALSE);
