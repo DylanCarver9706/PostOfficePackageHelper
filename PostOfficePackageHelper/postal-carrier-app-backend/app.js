@@ -79,15 +79,10 @@ const openai = new OpenAI({
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
-const CONFIG = {
-  credentials: {
-    private_key: process.env.GOOGLE_VISION_CREDENTIALS_PRIVATE_KEY,
-    client_email: process.env.GOOGLE_VISION_CREDENTIALS_CLIENT_EMAIL,
-  },
-};
-
 // Initialize a Google Cloud Vision client
-const client = new vision.ImageAnnotatorClient(CONFIG);
+const client = new vision.ImageAnnotatorClient({
+  keyFilename: "./keys/PostalApi.json",
+});
 
 // Define a route to perform object detection, cropping, and text recognition
 app.post(
@@ -232,13 +227,13 @@ app.post(
                   },
                   {
                     role: "user",
-                    content: `Here is extracted text from a picture of a package label: ${extractedTextDescription}\n\n Please return the customer/business names and their address from that text as an array of JSON objects with key/value pairs for customer_or_business_name, address1, address2, city, state, and zip_code. There are only 2 addresses in there.`,
+                    content: `Here is extracted text from a picture of a package label: ${extractedTextDescription}\n\n Please return the customer/business names and their address from that text as an array of JSON objects with key/value pairs for customer_or_business_name, address1, address2, city, state, and zip_code. The returned array of objects should include no line breaks or extra spaces and should be one line of text. There are only 2 addresses in there.`,
                   },
                 ],
               });
 
               const jsonObject = JSON.parse(
-                promptResponse.choices[0].message.content
+                promptResponse.choices[0].message.content.trim().replace(/^```json\n/, '').replace(/\n```$/, '')
               );
               console.log(
                 "Prompt json object: \n" + JSON.stringify(jsonObject, null, 2)

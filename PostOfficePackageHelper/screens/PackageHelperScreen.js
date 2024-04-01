@@ -54,8 +54,8 @@ export function PackageHelperScreen() {
     useState(false);
   const [newAddressData, setNewAddressData] = useState({
     route_id: null,
-    case_number: null,
-    case_row_number: null,
+    case_number: "",
+    case_row_number: "",
     address1: "",
     address2: "",
     city: "",
@@ -346,6 +346,9 @@ export function PackageHelperScreen() {
     //   "handle add new address data: \n" +
     //     JSON.stringify(newAddressData, null, 2)
     // );
+    if (!validateForm("address")) {
+      return; // Don't proceed if the form is not valid
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/addresses`, {
         method: "POST",
@@ -501,56 +504,35 @@ export function PackageHelperScreen() {
     );
   };
 
-  const validateForm = () => {
+  const validateForm = (formType) => {
     const errors = [];
 
-    if (!caseViewActive) {
-      if (!newAddress.address1.trim()) {
+    if (formType == "address") {
+      if (!newAddressData.address1.trim()) {
         errors.push("Address1 is required");
       }
       // if (!newAddress.address2.trim()) {
       //   errors.push("Address2 is required");
       // }
-      if (!newAddress.city.trim()) {
+      if (!newAddressData.city.trim()) {
         errors.push("City is required");
       }
-      if (!newAddress.state.trim()) {
+      if (!newAddressData.state.trim()) {
         errors.push("State is required");
       }
-      if (!newAddress.zip_code.trim()) {
+      if (!newAddressData.zip_code.trim()) {
         errors.push("Zip Code is required");
       }
-      if (!newAddress.case_number.trim()) {
+      if (!newAddressData.case_number) {
         errors.push("Case Number is required");
       }
-      if (!newAddress.case_row_number.trim()) {
+      if (!newAddressData.case_row_number) {
         errors.push("Row Number is required");
       }
-
-    } else if (caseViewActive) {
-      
-      if (!newAddress.address1.trim()) {
-        errors.push("Address1 is required");
-      }
-      // if (!newAddress.address2.trim()) {
-      //   errors.push("Address2 is required");
+      // if (!packageMarker.trim()) {
+      //   errors.push("Package Marker is required");
       // }
-      if (!newAddress.city.trim()) {
-        errors.push("City is required");
-      }
-      if (!newAddress.state.trim()) {
-        errors.push("State is required");
-      }
-      if (!newAddress.zip_code.trim()) {
-        errors.push("Zip Code is required");
-      }
-      if (!newAddress.case_number.trim()) {
-        errors.push("Case Number is required");
-      }
-      if (!newAddress.case_row_number.trim()) {
-        errors.push("Row Number is required");
-      }
-    }
+    } 
 
     // Add more validation rules as needed for other fields
 
@@ -650,6 +632,13 @@ export function PackageHelperScreen() {
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Address Not Found.</Text>
           <Text style={styles.modalTitle}>Add New Address?</Text>
+          <View>
+            {validationErrors.map((error, index) => (
+              <Text key={index} style={styles.errorText}>
+                {error}
+              </Text>
+            ))}
+          </View>
           <TextInput
             placeholder="Address 1"
             onChangeText={(text) =>
@@ -707,9 +696,11 @@ export function PackageHelperScreen() {
             onPress={() => {
               setCameraVisible(true);
               closeAddNewAddressModal();
+              setValidationErrors([]);
+              setPackageMarker("");
               setNewAddressData({
-                case_number: null,
-                case_row_number: null,
+                case_number: "",
+                case_row_number: "",
                 address1: "",
                 address2: "",
                 city: "",
@@ -793,7 +784,7 @@ export function PackageHelperScreen() {
           />
         </View>
       </Modal>
-      
+
       {/* Set Package Marker Modal */}
       <Modal
         visible={isPackageMarkerModalVisible}
@@ -865,5 +856,9 @@ const styles = StyleSheet.create({
     height: height / 1.55,
     borderColor: "red",
     borderWidth: 5,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
 });
