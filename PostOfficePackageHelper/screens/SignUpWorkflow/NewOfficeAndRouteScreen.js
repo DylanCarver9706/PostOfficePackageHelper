@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Button, Text, ScrollView } from "react-native";
+import { View, TextInput, Button, Text, ScrollView, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../../apiConfig"; // Import your API base URL
@@ -14,6 +14,7 @@ export function NewOfficeRouteScreenScreen() {
   const [routes, setRoutes] = useState([]);
   const [routeInput, setRouteInput] = useState("");
   const [userId, setUserId] = useState(null);
+  const [validationErrors, setValidationErrors] = useState([]);
 
   const navigation = useNavigation();
 
@@ -44,6 +45,9 @@ export function NewOfficeRouteScreenScreen() {
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return; // Don't proceed if the form is not valid
+    }
     const officeData = {
       user_id: userId,
       city: city,
@@ -108,10 +112,43 @@ export function NewOfficeRouteScreenScreen() {
     }
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    // Email validation regex pattern
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!city.trim()) {
+      errors.push("City is required");
+    }
+
+    if (!state.trim()) {
+      errors.push("State is required");
+    }
+
+    if (routes.length === 0) {
+      errors.push("Please enter at least one route you work at this office");
+    }
+
+    // Add more validation rules as needed for other fields
+
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={{ padding: 20 }}>
-        <Text style={{ fontSize: 20, marginBottom: 20 }}>Enter the info for the office you work at the most: </Text>
+        <Text style={{ fontSize: 20, marginBottom: 20 }}>
+          Enter the info for the office you work at the most:{" "}
+        </Text>
+        <View>
+          {validationErrors.map((error, index) => (
+            <Text key={index} style={styles.errorText}>
+              {error}
+            </Text>
+          ))}
+        </View>
         <TextInput
           style={{
             height: 40,
@@ -220,3 +257,11 @@ export function NewOfficeRouteScreenScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+  },
+  // ... other styles ...
+});

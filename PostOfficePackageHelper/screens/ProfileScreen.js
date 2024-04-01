@@ -12,7 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import API_BASE_URL from "../apiConfig";
 
-const ProfileScreen = () => {
+export function ProfileScreen() {
   const [userData, setUserData] = useState(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
@@ -253,8 +253,6 @@ const ProfileScreen = () => {
     </View>
   );
 };
-
-export default ProfileScreen;
 
 const styles = StyleSheet.create({
   errorText: {

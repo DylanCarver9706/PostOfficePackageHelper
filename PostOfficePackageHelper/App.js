@@ -53,10 +53,7 @@ export default function App() {
         <Stack.Screen name="Welcome Screen" component={WelcomeScreen} />
         <Stack.Screen name="Account Created Screen" component={AccountCreatedScreen} />
         <Stack.Screen name="Login Screen" component={LoginScreen} />
-        <Stack.Screen
-          name="New Office and Route Screen"
-          component={NewOfficeRouteScreenScreen}
-        />
+        <Stack.Screen name="New Office and Route Screen" component={NewOfficeRouteScreenScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
