@@ -4,16 +4,16 @@ import { useNavigation } from "@react-navigation/native";
 
 const tutorialContent = [
   {
-    image: require("../assets/demo1-image.png"),
+    image: require("../../assets/demo1-image.png"),
   },
   {
-    image: require("../assets/demo2-image.png"),
+    image: require("../../assets/demo2-image.png"),
   },
   {
-    image: require("../assets/demo3-image.png"),
+    image: require("../../assets/demo3-image.png"),
   },
   {
-    image: require("../assets/demo-4-image.png"),
+    image: require("../../assets/demo-4-image.png"),
   },
 ];
 

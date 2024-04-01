@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import API_BASE_URL from "../apiConfig";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import API_BASE_URL from "../../apiConfig";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export function SignUpScreen() {
@@ -52,7 +52,9 @@ export function SignUpScreen() {
     if (!password.trim()) {
       errors.push("Password is required");
     } else if (!passwordPattern.test(password)) {
-      errors.push("Password must be at least 8 characters long + contain at least one number and one special character");
+      errors.push(
+        "Password must be at least 8 characters long + contain at least one number and one special character"
+      );
     }
 
     setValidationErrors(errors);
@@ -76,7 +78,7 @@ export function SignUpScreen() {
           email: email,
           phone_number: phoneNumber,
           position: position,
-          firebase_user_uid: user.user.uid
+          firebase_user_uid: user.user.uid,
         };
 
         // Send a POST request to the API to create a new user
@@ -96,8 +98,10 @@ export function SignUpScreen() {
           // Store user ID securely (e.g., using AsyncStorage)
           await AsyncStorage.setItem("userId", newUserData.user.id.toString());
           await AsyncStorage.setItem("userEmail", newUserData.user.email);
-          await AsyncStorage.setItem("userFirebaseUid", newUserData.user.firebase_user_uid);
-          // navigation.navigate("New Office Screen");
+          await AsyncStorage.setItem(
+            "userFirebaseUid",
+            newUserData.user.firebase_user_uid
+          );
           navigation.navigate("New Office and Route Screen");
         }
       }
