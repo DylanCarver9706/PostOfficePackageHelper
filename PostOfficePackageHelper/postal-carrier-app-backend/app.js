@@ -1475,11 +1475,11 @@ app.get("/api/deliveriesByRouteAndDate", (req, res) => {
   const formattedDeliveryDate = deliveryDate.substring(0, 10);
 
   const sql = `
-    SELECT deliveries.*, addresses.address1, addresses.case_number, addresses.case_row_number, addresses.position_number, addresses.address2, addresses.city, addresses.state, addresses.zip_code, addresses.active_status, r.active_status
+    SELECT deliveries.*, addresses.address1, addresses.case_number, addresses.case_row_number, addresses.position_number, addresses.address2, addresses.city, addresses.state, addresses.zip_code
     FROM deliveries
     LEFT JOIN addresses ON deliveries.address_id = addresses.address_id
     LEFT JOIN routes AS r ON deliveries.route_id = r.route_id
-    WHERE deliveries.route_id = ? AND DATE(deliveries.delivery_date) = ? AND addresses.active_status = 1 AND r.active_status = 1
+    WHERE deliveries.route_id = ? AND DATE(deliveries.delivery_date) = ? AND addresses.active_status = 1 AND r.active_status = 1 AND deliveries.active_status = 1
   `;
 
   db.query(sql, [route_id, formattedDeliveryDate], (err, results) => {

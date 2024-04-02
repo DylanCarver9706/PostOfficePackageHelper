@@ -262,14 +262,12 @@ export function PackageHelperScreen() {
 
       if (response.ok) {
         const data = await response.json();
-        // console.log(data);
-        // Filter by only active deliveries
-        deliveryData = data.filter((delivery) => delivery.active_status != 0);
+        console.log(data);
         // Sort deliveries based on 'delivered' status and then by case_number,
         // case_row_number, and position_number
         // Group deliveries by case_row_number
         const groupedDeliveries = {};
-        deliveryData.forEach((delivery) => {
+        data.forEach((delivery) => {
           const caseRowNumber = delivery.case_row_number;
           if (!groupedDeliveries[caseRowNumber]) {
             groupedDeliveries[caseRowNumber] = [];
@@ -450,7 +448,7 @@ export function PackageHelperScreen() {
     }
   };
 
-  const handleDeleteDelivery = async (deliveryId, activeStatus) => {
+  const handleDeleteDelivery = async (deliveryId) => {
     // Display a confirmation alert to confirm the delete action
     Alert.alert(
       "Confirm Delete",
@@ -466,8 +464,6 @@ export function PackageHelperScreen() {
           onPress: async () => {
             try {
               // console.log(deliveryId)
-              // console.log(activeStatus)
-              // console.log(!activeStatus)
               const response = await fetch(
                 `${API_BASE_URL}/deliveries/delete/${deliveryId}`,
                 {
@@ -551,7 +547,7 @@ export function PackageHelperScreen() {
           <DateTimePicker
             value={currentDate}
             mode="date"
-            display="spinner"
+            display="default"
             onChange={onChange}
           />
         )}
@@ -728,6 +724,7 @@ export function PackageHelperScreen() {
               <Text>City: {item.city}</Text>
               <Text>State: {item.state}</Text>
               <Text>Zip Code: {item.zip_code}</Text>
+              <Text>Active Status: {item.active_status}</Text>
               <Text>Delivered: {item.delivered ? "Yes" : "No"}</Text>
               <Button
                 title={item.delivered ? "Mark Undelivered" : "Mark Delivered"}
@@ -739,7 +736,7 @@ export function PackageHelperScreen() {
               <Button
                 title="Delete"
                 onPress={() =>
-                  handleDeleteDelivery(item.delivery_id, item.active_status)
+                  handleDeleteDelivery(item.delivery_id)
                 }
                 color="red"
               />
