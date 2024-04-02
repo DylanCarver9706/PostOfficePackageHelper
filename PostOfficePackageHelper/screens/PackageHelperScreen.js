@@ -250,6 +250,29 @@ export function PackageHelperScreen() {
     }
   };
 
+  // Sorting function
+  const sortDeliveries = async (deliveries) => {
+    return deliveries.sort((a, b) => {
+        // First, sort by delivered (0 before 1)
+        if (a.delivered !== b.delivered) {
+            return a.delivered - b.delivered;
+        }
+
+        // Then, sort by case number
+        if (a.case_number !== b.case_number) {
+            return a.case_number - b.case_number;
+        }
+
+        // Then, sort by case row number
+        if (a.case_row_number !== b.case_row_number) {
+            return a.case_row_number - b.case_row_number;
+        }
+
+        // Finally, sort by row position number
+        return a.position_number - b.position_number;
+    });
+}
+
   const fetchDeliveries = async () => {
     try {
       setIsLoading(true);
@@ -265,33 +288,11 @@ export function PackageHelperScreen() {
         // console.log(data);
         // Sort deliveries based on 'delivered' status and then by case_number,
         // case_row_number, and position_number
-        // Group deliveries by case_row_number
-        const groupedDeliveries = {};
-        data.forEach((delivery) => {
-          const caseRowNumber = delivery.case_row_number;
-          if (!groupedDeliveries[caseRowNumber]) {
-            groupedDeliveries[caseRowNumber] = [];
-          }
-          groupedDeliveries[caseRowNumber].push(delivery);
+
+        sortDeliveries(data).then((sortedDeliveries) => {
+          setDeliveries(sortedDeliveries);
+          setIsLoading(false);
         });
-
-        // Sort deliveries within each group by case_number
-        for (const key in groupedDeliveries) {
-          groupedDeliveries[key].sort((a, b) => a.case_number - b.case_number);
-        }
-
-        // Flatten the groups back into a single array
-        const sortedDeliveries = [];
-        const maxGroups = Math.max(...Object.keys(groupedDeliveries));
-        for (let i = 1; i <= maxGroups; i++) {
-          if (groupedDeliveries[i]) {
-            sortedDeliveries.push(...groupedDeliveries[i]);
-          }
-        }
-
-        // console.log(sortedDeliveries);
-        setDeliveries(sortedDeliveries);
-        setIsLoading(false);
       } else {
         console.error("Error fetching deliveries:", response.status);
       }
@@ -307,6 +308,7 @@ export function PackageHelperScreen() {
       );
       if (response.ok) {
         const data = await response.json();
+        // Filter out the fake addresses
         const filteredAddresses = data.filter(
           (address) =>
             address.address1 != "123 Main St" &&
