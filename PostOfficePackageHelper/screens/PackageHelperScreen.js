@@ -22,7 +22,7 @@ import { useNavigation } from "@react-navigation/native";
 import ToastManager, { Toast } from "toastify-react-native";
 // import DatePicker from "react-native-date-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import API_BASE_URL from "../apiConfig";
+import CONFIG_VARS from "../config";
 
 const { width, height } = Dimensions.get("window");
 
@@ -147,7 +147,7 @@ export function PackageHelperScreen() {
         delivered: false,
       };
       // console.log(newDeliveryData);
-      const response = await fetch(`${API_BASE_URL}/deliveries`, {
+      const response = await fetch(`${CONFIG_VARS.DEV_API_BASE_URL}/api/deliveries`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -188,7 +188,7 @@ export function PackageHelperScreen() {
       });
       console.log("text extraction started...");
       setIsLoading(true);
-      fetch(`${API_BASE_URL}/recognize-image-objects`, {
+      fetch(`${CONFIG_VARS.DEV_API_BASE_URL}/api/recognize-image-objects`, {
         method: "POST",
         body: formData,
       })
@@ -204,9 +204,9 @@ export function PackageHelperScreen() {
             );
 
             if (fullExtractedText.address2 !== "") {
-              requestUrl = `${API_BASE_URL}/addressesByFormattedData?fullAddress=${fullExtractedText.address1} ${fullExtractedText.address2} ${fullExtractedText.city} ${fullExtractedText.state} ${fullExtractedText.zip_code}`;
+              requestUrl = `${CONFIG_VARS.DEV_API_BASE_URL}/api/addressesByFormattedData?fullAddress=${fullExtractedText.address1} ${fullExtractedText.address2} ${fullExtractedText.city} ${fullExtractedText.state} ${fullExtractedText.zip_code}`;
             } else {
-              requestUrl = `${API_BASE_URL}/addressesByFormattedData?fullAddress=${fullExtractedText.address1} ${fullExtractedText.city} ${fullExtractedText.state} ${fullExtractedText.zip_code}`;
+              requestUrl = `${CONFIG_VARS.DEV_API_BASE_URL}/api/addressesByFormattedData?fullAddress=${fullExtractedText.address1} ${fullExtractedText.city} ${fullExtractedText.state} ${fullExtractedText.zip_code}`;
             }
             // console.log(requestUrl);
 
@@ -257,12 +257,12 @@ export function PackageHelperScreen() {
       setSelectedRoute(selectedRouteId);
 
       const response = await fetch(
-        `${API_BASE_URL}/deliveriesByRouteAndDate?route_id=${selectedRouteId}&deliveryDate=${date}`
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/deliveriesByRouteAndDate?route_id=${selectedRouteId}&deliveryDate=${date}`
       );
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         // Sort deliveries based on 'delivered' status and then by case_number,
         // case_row_number, and position_number
         // Group deliveries by case_row_number
@@ -303,7 +303,7 @@ export function PackageHelperScreen() {
   const fetchAddresses = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/addressesByRouteId?route_id=${selectedRoute}`
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addressesByRouteId?route_id=${selectedRoute}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -348,7 +348,7 @@ export function PackageHelperScreen() {
       return; // Don't proceed if the form is not valid
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/addresses`, {
+      const response = await fetch(`${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -422,7 +422,7 @@ export function PackageHelperScreen() {
   // Function to toggle the 'Delivered' status for a specific delivery
   const toggleDeliveredStatus = async (deliveryId, isDelivered) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/deliveries/${deliveryId}`, {
+      const response = await fetch(`${CONFIG_VARS.DEV_API_BASE_URL}/api/deliveries/${deliveryId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -465,7 +465,7 @@ export function PackageHelperScreen() {
             try {
               // console.log(deliveryId)
               const response = await fetch(
-                `${API_BASE_URL}/deliveries/delete/${deliveryId}`,
+                `${CONFIG_VARS.DEV_API_BASE_URL}/api/deliveries/delete/${deliveryId}`,
                 {
                   method: "PATCH",
                   headers: {
@@ -528,7 +528,7 @@ export function PackageHelperScreen() {
       // if (!packageMarker.trim()) {
       //   errors.push("Package Marker is required");
       // }
-    } 
+    }
 
     // Add more validation rules as needed for other fields
 
@@ -735,9 +735,7 @@ export function PackageHelperScreen() {
               {/* Delete button */}
               <Button
                 title="Delete"
-                onPress={() =>
-                  handleDeleteDelivery(item.delivery_id)
-                }
+                onPress={() => handleDeleteDelivery(item.delivery_id)}
                 color="red"
               />
             </View>

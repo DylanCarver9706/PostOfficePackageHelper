@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import API_BASE_URL from "../apiConfig";
+import CONFIG_VARS from "../config";
 
 export function SelectOfficeRouteScreen() {
   const [selectedPostOffice, setSelectedPostOffice] = useState(null);
@@ -75,7 +75,7 @@ export function SelectOfficeRouteScreen() {
   const fetchOffices = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/officesByUserId?user_id=${userId}`
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/officesByUserId?user_id=${userId}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -123,7 +123,7 @@ export function SelectOfficeRouteScreen() {
   const handleNextScreen = async () => {
     homeScreenSelection = await AsyncStorage.getItem("selectedScreen");
     console.log("The next Screen: ", homeScreenSelection);
-    setSelectedRoute(null)
+    setSelectedRoute(null);
     navigation.navigate(homeScreenSelection);
   };
 
@@ -173,13 +173,16 @@ export function SelectOfficeRouteScreen() {
       };
 
       // Send a POST request to create a new office
-      const response = await fetch(`${API_BASE_URL}/offices`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newOffice),
-      });
+      const response = await fetch(
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/offices`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newOffice),
+        }
+      );
 
       if (response.ok) {
         // Refresh the list of offices
@@ -218,7 +221,7 @@ export function SelectOfficeRouteScreen() {
             onPress: async () => {
               // Send a DELETE request to delete the office
               const response = await fetch(
-                `${API_BASE_URL}/offices/delete/${officeId}`,
+                `${CONFIG_VARS.DEV_API_BASE_URL}/api/offices/delete/${officeId}`,
                 {
                   method: "PATCH",
                   headers: {
@@ -273,7 +276,7 @@ export function SelectOfficeRouteScreen() {
     setOfficeModalVisible(false);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/offices/${editingOffice.office_id}`,
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/offices/${editingOffice.office_id}`,
         {
           method: "PUT",
           headers: {
@@ -326,13 +329,16 @@ export function SelectOfficeRouteScreen() {
         // Add other route fields here
       };
 
-      const response = await fetch(`${API_BASE_URL}/routes`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newRoute),
-      });
+      const response = await fetch(
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/routes`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newRoute),
+        }
+      );
 
       if (response.ok) {
         // Call fetchRoutes with the selected office's ID to update the routes state
@@ -368,7 +374,7 @@ export function SelectOfficeRouteScreen() {
             onPress: async () => {
               // Send a DELETE request to delete the route
               const response = await fetch(
-                `${API_BASE_URL}/routes/delete/${routeId}`,
+                `${CONFIG_VARS.DEV_API_BASE_URL}/api/routes/delete/${routeId}`,
                 {
                   method: "PATCH",
                   headers: {
@@ -381,7 +387,7 @@ export function SelectOfficeRouteScreen() {
               if (response.ok) {
                 // Refresh the list of routes for the selected office
                 const routesResponse = await fetch(
-                  `${API_BASE_URL}/routesByOfficeId?office_id=${selectedPostOffice.office_id}`
+                  `${CONFIG_VARS.DEV_API_BASE_URL}/api/routesByOfficeId?office_id=${selectedPostOffice.office_id}`
                 );
 
                 if (routesResponse.ok) {
@@ -431,7 +437,7 @@ export function SelectOfficeRouteScreen() {
     setExistingRouteModalVisible(false);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/routes/${editingRoute.route_id}`,
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/routes/${editingRoute.route_id}`,
         {
           method: "PUT",
           headers: {
@@ -466,7 +472,7 @@ export function SelectOfficeRouteScreen() {
   const fetchRoutes = async (officeId) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/routesByOfficeId?office_id=${officeId}`
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/routesByOfficeId?office_id=${officeId}`
       );
 
       if (response.ok) {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import API_BASE_URL from "../apiConfig";
+import CONFIG_VARS from "../config";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
@@ -33,20 +33,23 @@ export function LoginScreen() {
     if (!validateForm()) {
       return; // Don't proceed if the form is not valid
     }
-  
+
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
       if (user) {
         // User was successfully created in Firebase
         const response = await fetch(
-          `${API_BASE_URL}/afterLoginUserData?email=${email}&firebase_user_uid=${user.user.uid}`
+          `${CONFIG_VARS.DEV_API_BASE_URL}/api/afterLoginUserData?email=${email}&firebase_user_uid=${user.user.uid}`
         );
         if (response.status === 200) {
           const userData = await response.json();
           // Store user ID securely (e.g., using AsyncStorage)
           await AsyncStorage.setItem("userId", userData.user_id.toString());
           await AsyncStorage.setItem("userEmail", userData.email);
-          await AsyncStorage.setItem("userFirebaseUid", userData.firebase_user_uid);
+          await AsyncStorage.setItem(
+            "userFirebaseUid",
+            userData.firebase_user_uid
+          );
           navigation.navigate("Home");
         }
       }

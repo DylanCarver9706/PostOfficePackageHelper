@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Button, Text, ScrollView, StyleSheet } from "react-native";
+import {
+  View,
+  TextInput,
+  Button,
+  Text,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import API_BASE_URL from "../../apiConfig"; // Import your API base URL
+import CONFIG_VARS from "../../config";
 
 export function NewOfficeRouteScreenScreen() {
   const [city, setCity] = useState("");
@@ -61,13 +68,16 @@ export function NewOfficeRouteScreenScreen() {
     // console.log(updatedPostOffices);
     try {
       // Send a POST request to create post offices
-      const officeResponse = await fetch(`${API_BASE_URL}/offices`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(officeData),
-      });
+      const officeResponse = await fetch(
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/offices`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(officeData),
+        }
+      );
 
       if (officeResponse.ok) {
         // Handle success
@@ -77,16 +87,19 @@ export function NewOfficeRouteScreenScreen() {
         try {
           for (let index = 0; index < routes.length; index++) {
             // Send a POST request to create routes
-            let routeResponse = await fetch(`${API_BASE_URL}/routes`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                office_id: officeResponseJson.office.id,
-                route_number: routes[index],
-              }),
-            });
+            let routeResponse = await fetch(
+              `${CONFIG_VARS.DEV_API_BASE_URL}/api/routes`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  office_id: officeResponseJson.office.id,
+                  route_number: routes[index],
+                }),
+              }
+            );
 
             if (routeResponse.ok) {
               // Handle success

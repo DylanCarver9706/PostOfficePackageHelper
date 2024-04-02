@@ -32,7 +32,7 @@ yarn-error.*
 .env
 .env.local
 .env.*.local
-PostalApi.json
+GoogleCloudApiKeys.json
 
 # typescript
 *.tsbuildinfo
@@ -44,5 +44,5 @@ croppedImage.txt
 extractedText.json
 
 #ApiConfig
-apiConfig.js
+config.js
 FirebaseConfig.js

@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import ToastManager, { Toast } from "toastify-react-native";
-import API_BASE_URL from "../apiConfig";
+import CONFIG_VARS from "../config";
 
 export function CaseBuilderScreen() {
   const [selectedPostOffice, setSelectedPostOffice] = useState(null);
@@ -75,7 +75,7 @@ export function CaseBuilderScreen() {
       setSelectedPostOffice(selectedOfficeId);
 
       const response = await fetch(
-        `${API_BASE_URL}/addressesByRouteId?route_id=${selectedRouteId}`
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addressesByRouteId?route_id=${selectedRouteId}`
       );
 
       if (response.ok) {
@@ -193,13 +193,16 @@ export function CaseBuilderScreen() {
       };
 
       // Send a POST request to add the new case
-      const response = await fetch(`${API_BASE_URL}/addresses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newCaseData),
-      });
+      const response = await fetch(
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newCaseData),
+        }
+      );
 
       if (response.ok) {
         // After adding the new case, fetch the updated list of cases
@@ -247,7 +250,7 @@ export function CaseBuilderScreen() {
   const deleteLastCase = async (caseNumber) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/patchDeleteAddressesByCaseAndRoute?case_number=${caseNumber}&route_id=${selectedRoute}`,
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/patchDeleteAddressesByCaseAndRoute?case_number=${caseNumber}&route_id=${selectedRoute}`,
         {
           method: "PATCH",
           headers: {
@@ -319,7 +322,7 @@ export function CaseBuilderScreen() {
   const fetchAddresses = async () => {
     try {
       // Fetch addresses in delivery order
-      const requestUrl = `${API_BASE_URL}/addressesByRouteId?route_id=${selectedRoute}`;
+      const requestUrl = `${CONFIG_VARS.DEV_API_BASE_URL}/api/addressesByRouteId?route_id=${selectedRoute}`;
       const response = await fetch(requestUrl);
 
       if (response.ok) {
@@ -391,7 +394,7 @@ export function CaseBuilderScreen() {
 
   const fetchOfficeAndRouteData = async () => {
     const officeResponse = await fetch(
-      `${API_BASE_URL}/offices/${selectedPostOffice}`
+      `${CONFIG_VARS.DEV_API_BASE_URL}/api/offices/${selectedPostOffice}`
     );
 
     if (officeResponse.ok) {
@@ -404,7 +407,7 @@ export function CaseBuilderScreen() {
     }
 
     const routeResponse = await fetch(
-      `${API_BASE_URL}/routes/${selectedRoute}`
+      `${CONFIG_VARS.DEV_API_BASE_URL}/api/routes/${selectedRoute}`
     );
     if (routeResponse.ok) {
       const data = await routeResponse.json();
@@ -454,7 +457,7 @@ export function CaseBuilderScreen() {
   const handleDeleteAddress = async (addressId) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/addresses/delete/${addressId}`,
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses/delete/${addressId}`,
         {
           method: "PATCH",
           headers: {
@@ -500,7 +503,7 @@ export function CaseBuilderScreen() {
     // Send a PUT request to update the address on the server
     try {
       const response = await fetch(
-        `${API_BASE_URL}/addresses/${selectedAddress.address_id}`,
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses/${selectedAddress.address_id}`,
         {
           method: "PUT",
           headers: {
@@ -553,13 +556,16 @@ export function CaseBuilderScreen() {
     }
     // Send a POST request to create a new address
     try {
-      const response = await fetch(`${API_BASE_URL}/addresses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newAddress),
-      });
+      const response = await fetch(
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newAddress),
+        }
+      );
 
       if (response.ok) {
         // Refresh the addresses list
@@ -637,7 +643,7 @@ export function CaseBuilderScreen() {
         // console.log("Updating address order for ID:", addressId);
 
         const response = await fetch(
-          `${API_BASE_URL}/addresses/${addressId}/reorder`,
+          `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses/${addressId}/reorder`,
           {
             method: "PUT",
             headers: {
@@ -763,9 +769,7 @@ export function CaseBuilderScreen() {
       if (!newAddress.case_row_number.trim()) {
         errors.push("Row Number is required");
       }
-
     } else if (caseViewActive) {
-      
       if (!newAddress.address1.trim()) {
         errors.push("Address1 is required");
       }
@@ -813,7 +817,6 @@ export function CaseBuilderScreen() {
     if (!editedAddress.zip_code.trim()) {
       errors.push("Zip Code is required");
     }
-    
 
     // Add more validation rules as needed for other fields
 
@@ -1011,13 +1014,13 @@ export function CaseBuilderScreen() {
                   }}
                 >
                   <View style={{ backgroundColor: "white", padding: 20 }}>
-                  <View>
-                    {validationErrors.map((error, index) => (
-                      <Text key={index} style={styles.errorText}>
-                        {error}
-                      </Text>
-                    ))}
-                  </View>
+                    <View>
+                      {validationErrors.map((error, index) => (
+                        <Text key={index} style={styles.errorText}>
+                          {error}
+                        </Text>
+                      ))}
+                    </View>
                     <TextInput
                       placeholder="Address 1"
                       value={editedAddress.address1}
@@ -1069,78 +1072,78 @@ export function CaseBuilderScreen() {
 
           {/* Add Address Modal Case & List View */}
           {/* {caseViewActive ? ( */}
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={newAddressModalVisible}
-              onRequestClose={() => {
-                setNewAddressModalVisible(false);
-              }}
-            >
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <View>
-                    {validationErrors.map((error, index) => (
-                      <Text key={index} style={styles.errorText}>
-                        {error}
-                      </Text>
-                    ))}
-                  </View>
-                  <TextInput
-                    placeholder="Address 1"
-                    onChangeText={(text) =>
-                      setNewAddress({ ...newAddress, address1: text })
-                    }
-                  />
-                  <TextInput
-                    placeholder="Address 2"
-                    onChangeText={(text) =>
-                      setNewAddress({ ...newAddress, address2: text })
-                    }
-                  />
-                  <TextInput
-                    placeholder="City"
-                    onChangeText={(text) =>
-                      setNewAddress({ ...newAddress, city: text })
-                    }
-                  />
-                  <TextInput
-                    placeholder="State"
-                    onChangeText={(text) =>
-                      setNewAddress({ ...newAddress, state: text })
-                    }
-                  />
-                  <TextInput
-                    placeholder="Zip Code"
-                    onChangeText={(text) =>
-                      setNewAddress({ ...newAddress, zip_code: text })
-                    }
-                  />
-                  <TextInput
-                    placeholder="Case Number"
-                    onChangeText={(text) =>
-                      setNewAddress({ ...newAddress, case_number: text })
-                    }
-                  />
-                  <TextInput
-                    placeholder="Row Number"
-                    onChangeText={(text) =>
-                      setNewAddress({ ...newAddress, case_row_number: text })
-                    }
-                  />
-                  <Button
-                    title="Cancel"
-                    onPress={() => {
-                      setNewAddressModalVisible(false);
-                      setValidationErrors([]);
-                    }}
-                  />
-                  <Button title="Save" onPress={handleSaveNewAddress} />
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={newAddressModalVisible}
+            onRequestClose={() => {
+              setNewAddressModalVisible(false);
+            }}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <View>
+                  {validationErrors.map((error, index) => (
+                    <Text key={index} style={styles.errorText}>
+                      {error}
+                    </Text>
+                  ))}
                 </View>
+                <TextInput
+                  placeholder="Address 1"
+                  onChangeText={(text) =>
+                    setNewAddress({ ...newAddress, address1: text })
+                  }
+                />
+                <TextInput
+                  placeholder="Address 2"
+                  onChangeText={(text) =>
+                    setNewAddress({ ...newAddress, address2: text })
+                  }
+                />
+                <TextInput
+                  placeholder="City"
+                  onChangeText={(text) =>
+                    setNewAddress({ ...newAddress, city: text })
+                  }
+                />
+                <TextInput
+                  placeholder="State"
+                  onChangeText={(text) =>
+                    setNewAddress({ ...newAddress, state: text })
+                  }
+                />
+                <TextInput
+                  placeholder="Zip Code"
+                  onChangeText={(text) =>
+                    setNewAddress({ ...newAddress, zip_code: text })
+                  }
+                />
+                <TextInput
+                  placeholder="Case Number"
+                  onChangeText={(text) =>
+                    setNewAddress({ ...newAddress, case_number: text })
+                  }
+                />
+                <TextInput
+                  placeholder="Row Number"
+                  onChangeText={(text) =>
+                    setNewAddress({ ...newAddress, case_row_number: text })
+                  }
+                />
+                <Button
+                  title="Cancel"
+                  onPress={() => {
+                    setNewAddressModalVisible(false);
+                    setValidationErrors([]);
+                  }}
+                />
+                <Button title="Save" onPress={handleSaveNewAddress} />
               </View>
-            </Modal>
+            </View>
+          </Modal>
           {/* ) : ( */}
-            {/* <Modal
+          {/* <Modal
               animationType="slide"
               transparent={true}
               visible={newAddressModalVisible}

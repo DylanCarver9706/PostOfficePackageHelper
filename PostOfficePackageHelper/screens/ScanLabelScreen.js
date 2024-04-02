@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Button, Dimensions, ActivityIndicator } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  Dimensions,
+  ActivityIndicator,
+} from "react-native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import API_BASE_URL from "../apiConfig";
+import CONFIG_VARS from "../config";
 
 const { width, height } = Dimensions.get("window");
 
@@ -25,20 +32,19 @@ export function ScanLabelScreen() {
   const takePicture = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
-      
-      
+
       // Save the captured image to the device's media library
       // MediaLibrary.createAssetAsync(photo.uri);
-      
+
       const formData = new FormData();
       formData.append("imageUri", {
         uri: photo.uri,
         type: "image/jpeg",
         name: "image.jpg",
       });
-      console.log("text extraction started...")
+      console.log("text extraction started...");
       setIsLoading(true);
-      fetch(`${API_BASE_URL}/recognize-image-objects`, {
+      fetch(`${CONFIG_VARS.DEV_API_BASE_URL}/api/recognize-image-objects`, {
         method: "POST",
         body: formData,
       })
@@ -58,9 +64,9 @@ export function ScanLabelScreen() {
 
             // Make the API request to addressesByFormattedData
             if (fullExtractedText.address2 !== "") {
-              requestUrl = `${API_BASE_URL}/addressesByFormattedData?fullAddress=${fullExtractedText.address1} ${fullExtractedText.address2} ${fullExtractedText.city} ${fullExtractedText.state} ${fullExtractedText.zip_code}`;
+              requestUrl = `${CONFIG_VARS.DEV_API_BASE_URL}/api/addressesByFormattedData?fullAddress=${fullExtractedText.address1} ${fullExtractedText.address2} ${fullExtractedText.city} ${fullExtractedText.state} ${fullExtractedText.zip_code}`;
             } else {
-              requestUrl = `${API_BASE_URL}/addressesByFormattedData?fullAddress=${fullExtractedText.address1} ${fullExtractedText.city} ${fullExtractedText.state} ${fullExtractedText.zip_code}`;
+              requestUrl = `${CONFIG_VARS.DEV_API_BASE_URL}/api/addressesByFormattedData?fullAddress=${fullExtractedText.address1} ${fullExtractedText.city} ${fullExtractedText.state} ${fullExtractedText.zip_code}`;
             }
             console.log(requestUrl);
             const response = await fetch(requestUrl);
@@ -91,7 +97,7 @@ export function ScanLabelScreen() {
           <Button title={"Allow Camera"} onPress={askForCameraPermission} />
         </View>
       )}
-  
+
       {hasPermission === true ? (
         isLoading ? (
           <ActivityIndicator size="large" color="#0000ff" />

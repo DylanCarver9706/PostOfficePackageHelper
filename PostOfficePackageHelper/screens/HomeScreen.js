@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Button, LogBox, BackHandler, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import API_BASE_URL from "../apiConfig";
+import CONFIG_VARS from "../config";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 
 export function HomeScreen() {
@@ -64,7 +64,7 @@ export function HomeScreen() {
     try {
       await AsyncStorage.clear();
       const response = await fetch(
-        `${API_BASE_URL}/logout?user_id=${user_id}`,
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/logout?user_id=${user_id}`,
         {
           method: "GET",
         }

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import API_BASE_URL from "../apiConfig";
+import CONFIG_VARS from "../config";
 
 export function ProfileScreen() {
   const [userData, setUserData] = useState(null);
@@ -30,7 +30,9 @@ export function ProfileScreen() {
   const fetchUserData = async () => {
     try {
       userId = await AsyncStorage.getItem("userId");
-      const response = await fetch(`${API_BASE_URL}/users/${userId}`);
+      const response = await fetch(
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/users/${userId}`
+      );
       if (response.ok) {
         const data = await response.json();
         setUserData(data);
@@ -72,13 +74,16 @@ export function ProfileScreen() {
 
     try {
       userId = await AsyncStorage.getItem("userId");
-      const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUserInfo),
-      });
+      const response = await fetch(
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/users/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedUserInfo),
+        }
+      );
       if (response.ok) {
         // Reload user data after update
         fetchUserData();
@@ -110,7 +115,7 @@ export function ProfileScreen() {
             text: "Delete",
             onPress: async () => {
               const response = await fetch(
-                `${API_BASE_URL}/users/delete/${userId}`,
+                `${CONFIG_VARS.DEV_API_BASE_URL}/api/users/delete/${userId}`,
                 {
                   method: "PATCH",
                   headers: {
@@ -252,7 +257,7 @@ export function ProfileScreen() {
       </Modal>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   errorText: {

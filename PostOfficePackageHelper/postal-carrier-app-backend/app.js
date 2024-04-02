@@ -5,14 +5,11 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 const session = require("express-session");
 const xmlbuilder2 = require("xmlbuilder2");
-// const { ImageAnnotatorClient } = require('@google-cloud/vision');
 const vision = require("@google-cloud/vision");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const upload = multer();
-require("dotenv").config({
-  path: "C:/Users/Dylan/PostOfficePackageHelper/PostOfficePackageHelperV1.1/PostOfficePackageHelperV1.1/.env",
-});
+const CONFIG_VARS = require('../config');
 const sharp = require("sharp");
 const fs = require("fs");
 const { OpenAI } = require("openai");
@@ -25,9 +22,7 @@ app.use(cors());
 
 // Use body-parser middleware with a higher limit
 app.use(bodyParser.json({ limit: "1000mb" }));
-
-const PORT = process.env.PORT;
-// console.log(PORT)
+const PORT = CONFIG_VARS.PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
@@ -42,10 +37,10 @@ app.listen(PORT, () => {
 
 // Create the MySQL database connection
 const db = mysql.createConnection({
-  host: process.env.MYSQL_CREDENTIALS_HOST,
-  user: process.env.MYSQL_CREDENTIALS_USER,
-  password: process.env.MYSQL_CREDENTIALS_PASSWORD,
-  database: process.env.MYSQL_CREDENTIALS_DATABASE,
+  host: CONFIG_VARS.MYSQL_CREDENTIALS_HOST,
+  user: CONFIG_VARS.MYSQL_CREDENTIALS_USER,
+  password: CONFIG_VARS.MYSQL_CREDENTIALS_PASSWORD,
+  database: CONFIG_VARS.MYSQL_CREDENTIALS_DATABASE,
 });
 
 // Connect to the MySQL database
@@ -66,7 +61,7 @@ db.connect((err) => {
 // ******************************************************************************************************************
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: CONFIG_VARS.OPENAI_API_KEY,
 });
 
 // Used in Google Vision Api for extracting addresses from extracted text
@@ -81,7 +76,7 @@ const openai = new OpenAI({
 
 // Initialize a Google Cloud Vision client
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: "./keys/PostalApi.json",
+  keyFilename: "./keys/GoogleCloudApiKeys.json",
 });
 
 // Define a route to perform object detection, cropping, and text recognition
@@ -317,7 +312,7 @@ app.post(
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
-const sessionSecretKey = process.env.SESSION_SECRET_KEY;
+const sessionSecretKey = CONFIG_VARS.SESSION_SECRET_KEY;
 
 app.use(
   session({

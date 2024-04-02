@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import API_BASE_URL from "../../apiConfig";
+import CONFIG_VARS from "../../config";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -82,13 +82,16 @@ export function SignUpScreen() {
         };
 
         // Send a POST request to the API to create a new user
-        const newUserResponse = await fetch(`${API_BASE_URL}/users/new`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        });
+        const newUserResponse = await fetch(
+          `${CONFIG_VARS.DEV_API_BASE_URL}/api/users/new`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+          }
+        );
 
         if (newUserResponse.status === 201) {
           // User was successfully created

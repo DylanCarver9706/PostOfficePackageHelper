@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DraggableFlatList from "react-native-draggable-flatlist";
-import API_BASE_URL from "../apiConfig";
+import CONFIG_VARS from "../config";
 
 export function AddressesScreen() {
   const [selectedRoute, setSelectedRoute] = useState(null);
@@ -72,7 +72,7 @@ export function AddressesScreen() {
   const fetchAddresses = async () => {
     try {
       if (selectedCase && selectedRow) {
-        const requestUrl = `${API_BASE_URL}/addressesByRouteAndCaseAndRow?route_id=${selectedRoute}&case_number=${selectedCase}&case_row_number=${selectedRow}&orderBy=position_number`;
+        const requestUrl = `${CONFIG_VARS.DEV_API_BASE_URL}/api/addressesByRouteAndCaseAndRow?route_id=${selectedRoute}&case_number=${selectedCase}&case_row_number=${selectedRow}&orderBy=position_number`;
         const response = await fetch(requestUrl);
 
         if (response.ok) {
@@ -117,7 +117,7 @@ export function AddressesScreen() {
   const handleDeleteAddress = async (addressId) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/addresses/delete/${addressId}`,
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses/delete/${addressId}`,
         {
           method: "PATCH",
           headers: {
@@ -163,7 +163,7 @@ export function AddressesScreen() {
     // Send a PUT request to update the address on the server
     try {
       const response = await fetch(
-        `${API_BASE_URL}/addresses/${selectedAddress.address_id}`,
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses/${selectedAddress.address_id}`,
         {
           method: "PUT",
           headers: {
@@ -215,13 +215,16 @@ export function AddressesScreen() {
     }
     // Send a POST request to create a new address
     try {
-      const response = await fetch(`${API_BASE_URL}/addresses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newAddress),
-      });
+      const response = await fetch(
+        `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newAddress),
+        }
+      );
 
       if (response.ok) {
         // Refresh the addresses list
@@ -252,7 +255,7 @@ export function AddressesScreen() {
       for (let i = 0; i < data.length; i++) {
         const address = data[i];
         const response = await fetch(
-          `${API_BASE_URL}/addresses/${address.address_id}/reorder`,
+          `${CONFIG_VARS.DEV_API_BASE_URL}/api/addresses/${address.address_id}/reorder`,
           {
             method: "PUT",
             headers: {
@@ -439,7 +442,7 @@ export function AddressesScreen() {
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <View style={{ backgroundColor: "white", padding: 20 }}>
-          <View>
+            <View>
               {validationErrors.map((error, index) => (
                 <Text key={index} style={styles.errorText}>
                   {error}
@@ -481,7 +484,10 @@ export function AddressesScreen() {
                 setEditedAddress({ ...editedAddress, zip_code: text })
               }
             />
-            <Button title="Cancel" onPress={() => setEditAddressModalVisible(false)} />
+            <Button
+              title="Cancel"
+              onPress={() => setEditAddressModalVisible(false)}
+            />
             <Button title="Save Changes" onPress={handleSaveChanges} />
           </View>
         </View>
@@ -538,7 +544,7 @@ export function AddressesScreen() {
             <Button
               title="Cancel"
               onPress={() => {
-                setNewAddressModalVisible(false)
+                setNewAddressModalVisible(false);
                 setValidationErrors([]);
               }}
             />
