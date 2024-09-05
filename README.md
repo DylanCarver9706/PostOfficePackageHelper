@@ -1,73 +1,113 @@
 # PostOfficePackageHelper
 
-**Use** - This app will help carriers at the post office keep track of their packages that need to be delivered. This will reduce misdeliveries, save time on backtracks, and provide more peace of mind while performing one of the hardest jobs in the world.
+This mobile app will help carriers at the post office keep track of their packages that need to be delivered and help them reduce the time it takes to get out the door and start delivering. This will reduce misdeliveries, save time on backtracks, and provide more peace of mind while performing one of the hardest jobs in the world.
 
-**Tech stacks** - This is a react native app running on Expo CLI for cross platform compatibility. The backend is handled on an Express API connected to a MYSQL database.
+## TO DO
 
-**Install:**
+- Release the mobile app to the Google Play Store and the Apple App Store.
+- Host the database and API server on an AWS EC2 instance.
+- Start beta testing with real users
 
-**Prerequisites:**
-- Node.js 18+ - find install instructions [here](https://nodejs.org/)
-- Ngrok for development port forwarding - Find install instructions [here](https://ngrok.com/)
-- (Optional but HIGHLY recommended) Download the Expo Go app from your device's app store and create an account in the app
+Track development progress on Trello. [View the Trello board](https://trll.io/CXV4TEITMD/test-share-link?pwd=Xw2HIHI2l3xcXcpK).
 
-If all prerequisites are met, clone the app into your working directory.
+## Features
 
-**App Setup:**
+- **Cross-Platform Compatibility**: Built with React Native and Expo CLI for seamless performance on both Android and iOS devices.
+- **Backend Integration**: Connected to an Express.js API with a MySQL relational database for data storage and retrieval.
+- **Machine Learning & AI**: Integrated with Google Vision and OpenAI APIs to leverage advanced machine learning and artificial intelligence capabilities.
+- **User Authentication & Analytics**: Utilizes Firebase SDK for secure user authentication and analytics to improve app security and user insights.
 
-1. Create a `.env` file in the root directory of the project folder and fill in this information regarding the required secret keys:
+## Tech Stack
 
-```
-GOOGLE_VISION_CREDENTIALS_PRIVATE_KEY=
-GOOGLE_VISION_CREDENTIALS_CLIENT_EMAIL=
+- **Frontend**: React Native, Expo CLI
+- **Backend**: Express.js, MySQL
+- **APIs**: Google Vision, OpenAI
+- **Authentication and Analytics**: Firebase SDK
 
-MYSQL_CREDENTIALS_HOST=
-MYSQL_CREDENTIALS_USER=
-MYSQL_CREDENTIALS_PASSWORD=
-MYSQL_CREDENTIALS_DATABASE=
+## Prerequisites and Tools
 
-SESSION_SECRET_KEY=
+Before you start, ensure you have the following installed on your system:
 
-PORT=
+- **Node.js**: Version 18 or higher for both React Native and Express.js. You can download it from the [official Node.js website](https://nodejs.org/).
+- **MySQL Workbench**: Required to create the database and locally host the database for development purposes.
+- **Ngrok**: For development port forwarding. You can find installation instructions [here](https://ngrok.com/).
+- **Android Studio**: Useful for testing on different kinds of android devices and the ability to export an APK for the app
+- **Xcode**: Necessary for testing on different kinds of IOS devices
+- **Expo Go App**: (Optional but highly recommended) Download the Expo Go app from your device's app store and create an account.
 
-OPENAI_API_KEY=
+## Installation
 
-DEV_API_BASE_URL=
-```
+To set up the Postal Package Helper app, follow these steps:
 
-2. Then update the import statement in `./postal-carrier-app-backend/app.js` for the `dotenv` library to match the path to the `.env` file.
+1. **Initialize database using schema**
+   - Open MySQL Workbench.
+   - Copy the contents of the latest schema file from the `./postal-carrier-app-backend/schemas` into the editor window.
+   - Run the SQL script to create the necessary database, tables, and testing data.
 
-3. Open the Ngrok client app and start a port forward on port 3000 (or whatever port you are running the Express app on).
+1. **Create a `.env` file** in the root directory of the project folder and fill in the required secret keys:
 
-4. Open the `apiConfig.js` file and update the `API_BASE_URL` variable to the Ngrok forwarding URL. Note: leave the \"/api\" as this is part of the full URL.
+    ```plaintext
+    GOOGLE_VISION_CREDENTIALS_PRIVATE_KEY=
+    GOOGLE_VISION_CREDENTIALS_CLIENT_EMAIL=
 
-5. Open the `FirebaseConfig.js` file to update the `firebaseConfig` object variable with the secret key information you would get from your Firebase project.
+    MYSQL_CREDENTIALS_HOST=
+    MYSQL_CREDENTIALS_USER=
+    MYSQL_CREDENTIALS_PASSWORD=
+    MYSQL_CREDENTIALS_DATABASE=
 
-**Run App:**
+    SESSION_SECRET_KEY=
 
-To run the app, I recommend opening two terminals. One for the Express app, and the other for the React Native Expo app.
+    PORT=
 
-**For the Express app**, navigate to the `/PostOfficePackageHelper/postal-carrier-app-backend` directory. 
-Run:
-```
-npm i
+    OPENAI_API_KEY=
+
+    DEV_API_BASE_URL= (Don't worry about this one until later)
+    ```
+
+3. **Update the import statement** for the `dotenv` library in `./postal-carrier-app-backend/app.js` to match the path to the `.env` file.
+
+5. **Update configuration files** in `FirebaseConfig.js`, update the `firebaseConfig` object with the secret key information from your Firebase project.
+
+## Running the App
+
+To run the app, open two terminal windows: one for the Express app and another for the React Native Expo app.
+
+### Running the Express App
+
+Navigate to the backend directory:
+
+```bash
+cd PostOfficePackageHelper/postal-carrier-app-backend
+npm install
 npm start
 ```
 
-**For the React Native Expo app**, navigate to the base directory using `cd ..`.
-Run:
+### Forward the development port using Ngrok
+
+React Native needs to be able to interact with the Express API via a port forwarded url that uses HTTPS.
+
+To get around this we can forward http://localhost:3000 using Ngrok.
+
+Open the Ngrok app and enter:
+
+```bash
+ngrok http 3000
 ```
-(For Expo Go users only) npx expo login -u <Expo username> -p <Expo password>
+Take the url it gives you and enter it into the DEV_API_BASE_URL variable located at PostOfficePackageHelper/config.js.
+
+### Running the React Native Expo App
+
+Navigate to the base directory:
+
+```bash
+cd ..
+```
+
+Run the following commands for Expo Go users only:
+```bash
+npx expo login -u <Expo username> -p <Expo password>
 npm i
 npm start
 ```
 
 When the CLI opens and you are greeted with options for different methods for running the app. The choice is really up to you for how to do this, but I recommend opening the Expo Go app on your mobile device and running the development server shown within the app. This is the fastest way to start using the app.
-
-**TO-DO: App Walkthrough & Features:**
-
-- Auth
-- Home Screen
-- Profile
-- Case Builder
-- Package Helper
